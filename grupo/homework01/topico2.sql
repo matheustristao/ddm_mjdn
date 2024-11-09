@@ -9,3 +9,9 @@ select distinct cus.CompanyName, ca.AddressType,ad.AddressLine1, ad.AddressLine2
         on ca.AddressID = ad.AddressID   
     order by cus.CompanyName     
 
+--4 Listar os clientes (CustomerID e CompanyName) sem encomendas associadas (SalesOrderHeader)
+select cus.CustomerID, cus.CompanyName, soh.CustomerID
+    FROM Customer cus
+    left join SalesOrderHeader soh
+        on cus.CustomerID=soh.CustomerID 
+        where soh.CustomerID is null
