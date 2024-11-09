@@ -1,3 +1,5 @@
+-- Tópico 2
+
 -- SQL - Exercícios II
 
 --Exerc. 1 - Para cada Cliente (CompanyName), listar os diferentes Endereços identificando o Tipo de Endereço
@@ -24,3 +26,46 @@ final) também deve ser listada. */
 select pnf.idpeca "idpeca-filho", pnf.nomepeca "nomepeça-filho", pnp.idpeca "idpeca-pai", pnp.nomepeca "nomepeça-pai", pnf.qtd "quantidade-filho" 
     from pecanew pnf left join pecanew pnp 
     on pnf.idpai = pnp.idpeca
+
+-- Tópico 3
+
+-- Lab 4 - Challenge 2
+
+-- Exerc. 1 - Retrieve customers with only a main office address
+
+-- Rascunho 1
+select distinct cus.CompanyName
+    from Customer as cus
+    where cus.CustomerID not in (
+        select cus.CustomerID
+            from Customer as cus
+            inner join CustomerAddress as ca 
+                on cus.CustomerID = ca.CustomerID  
+                and ca.AddressType = 'Shipping' 
+    )
+order by 1    
+
+-- Racunho 2
+select distinct cus.CompanyName
+    from Customer as cus
+    join (
+        select cus_aux.CustomerID
+            from Customer as cus_aux
+        except
+        select ca.CustomerID
+            from CustomerAddress as ca
+            where ca.AddressType = 'Shipping'
+        ) j
+    on cus.CustomerID = j.CustomerID
+
+
+      
+
+
+
+
+
+
+
+
+
