@@ -33,19 +33,6 @@ select pnf.idpeca "idpeca-filho", pnf.nomepeca "nomepeça-filho", pnp.idpeca "id
 
 -- Exerc. 1 - Retrieve customers with only a main office address
 
--- Rascunho 1
-select distinct cus.CompanyName
-    from Customer as cus
-    where cus.CustomerID not in (
-        select cus.CustomerID
-            from Customer as cus
-            inner join CustomerAddress as ca 
-                on cus.CustomerID = ca.CustomerID  
-                and ca.AddressType = 'Shipping' 
-    )
-order by 1    
-
--- Racunho 2
 select distinct cus.CompanyName
     from Customer as cus
     join (
