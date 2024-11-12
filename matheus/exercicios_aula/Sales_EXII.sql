@@ -70,7 +70,33 @@ select ProductID, Name
         select ProductCategoryID
             from Product 
             where ProductID = '714'
-    )     
+    );
+
+ -- 9
+
+ select cus_cond.CustomerId, ad_cond.City
+    from Customer cus_cond 
+    join CustomerAddress cas_cond 
+        on cus_cond.CustomerID = cas_cond.CustomerID
+    join Address ad_cond 
+        on cas_cond.AddressID = ad_cond.AddressID        
+    where ad_cond.StateProvince in ( 
+        select ad.StateProvince
+            from Customer cus
+            join CustomerAddress cas 
+                on cus.CustomerID = cas.AddressID
+            join Address ad 
+                on cas.AddressID = ad.AddressID                
+            where cus.CompanyName = 'Bikes and Motorbikes');
+
+-- 10 
+select pr.ProductID, ProductNumber, name
+    from Product as pr 
+    where not exists (
+        select *
+            from SalesOrderDetail as sod
+            where sod.ProductID = pr.ProductID
+    );
 
 -- 51
 select CompanyName, Title, FirstName, isnull(MiddleName,'') as MiddleName, LastName, isnull(Suffix,'') Sufix
