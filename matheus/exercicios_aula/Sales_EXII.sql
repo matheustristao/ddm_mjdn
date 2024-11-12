@@ -61,7 +61,16 @@ select cus_cond.CustomerId, CompanyName
                 on cus.CustomerID = cas.AddressID
             join Address ad 
                 on cas.AddressID = ad.AddressID                
-            where cus.CompanyName = 'Authentic Sales and Service')    
+            where cus.CompanyName = 'Authentic Sales and Service');
+
+-- 8 
+select ProductID, Name 
+    from Product       
+    where ProductCategoryID in (
+        select ProductCategoryID
+            from Product 
+            where ProductID = '714'
+    )     
 
 -- 51
 select CompanyName, Title, FirstName, isnull(MiddleName,'') as MiddleName, LastName, isnull(Suffix,'') Sufix
