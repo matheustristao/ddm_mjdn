@@ -98,6 +98,90 @@ select pr.ProductID, ProductNumber, name
             where sod.ProductID = pr.ProductID
     );
 
+-- 14 
+select count(*)
+    from Customer cus 
+    left join SalesOrderHeader soh 
+        on cus.CustomerID = soh.CustomerID
+    where soh.CustomerID is null;   
+
+select count(*)
+    from Customer cus 
+    where not exists (
+        select *
+            from SalesOrderHeader soh 
+            where cus.CustomerID = soh.CustomerID
+    );   
+
+-- 18 
+select pr.ProductCategoryId, pr.ProductID, sum(LineTotal) vendas
+    from Product pr        
+    join SalesOrderDetail sod 
+        on pr.ProductID = sod.ProductID     
+    group by rollup (ProductCategoryId,pr.ProductID)
+    order by 1,2;     
+
+-- 20
+
+select cus.CustomerID, cus.CompanyName, avg(soh.TotalDue) AVG_Vendas
+    from SalesOrderHeader soh 
+    join Customer cus 
+        on cus.CustomerID = soh.CustomerID 
+    group by cus.CustomerID, cus.CompanyName
+    having avg(soh.TotalDue)  > (select avg(TotalDue) from SalesOrderHeader)
+
+-- 21 
+select pr.ProductCategoryId, pr.ProductID, sum(LineTotal) vendas
+    from Product pr        
+    join SalesOrderDetail sod 
+        on pr.ProductID = sod.ProductID     
+    group by cube (ProductCategoryId,pr.ProductID)
+    order by 1,2;     
+
+-- 22 
+Select parentproductcategoryid, p.productcategoryid, p.productid, sum(linetotal)
+from Product p 
+join SalesOrderDetail sod
+    on p.productid=sod.ProductID 
+join ProductCategory pc
+    on p.productcategoryid=pc.productcategoryid
+group by rollup (parentproductcategoryid,p.productcategoryid, p.productid)
+
+Select parentproductcategoryid, p.productcategoryid, p.productid, sum(linetotal)
+from Product p 
+join SalesOrderDetail sod
+    on p.productid=sod.ProductID 
+join ProductCategory pc
+    on p.productcategoryid=pc.productcategoryid
+group by GROUPING sets(parentproductcategoryid,(parentproductcategoryid,p.productcategoryid),(parentproductcategoryid,p.productcategoryid, p.productid),())
+
+-- com cube
+
+Select parentproductcategoryid, p.productcategoryid, p.productid, sum(linetotal)
+from Product p 
+join SalesOrderDetail sod
+    on p.productid=sod.ProductID 
+join ProductCategory pc
+    on p.productcategoryid=pc.productcategoryid
+group by cube (parentproductcategoryid,p.productcategoryid, p.productid)
+
+
+Select parentproductcategoryid, p.productcategoryid, p.productid, sum(linetotal)
+from Product p 
+join SalesOrderDetail sod
+    on p.productid=sod.ProductID 
+join ProductCategory pc
+    on p.productcategoryid=pc.productcategoryid
+group by GROUPING sets(parentproductcategoryid,
+                      (parentproductcategoryid,p.productcategoryid),
+                      (parentproductcategoryid,p.productid),
+                      (parentproductcategoryid,p.productcategoryid, p.productid),
+                      (p.productcategoryid),
+                      (p.productcategoryid,p.productid),
+                      p.productid,
+                      ());
+
+
 -- 51
 select CompanyName, Title, FirstName, isnull(MiddleName,'') as MiddleName, LastName, isnull(Suffix,'') Sufix
     from Customer       
