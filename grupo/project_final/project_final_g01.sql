@@ -163,3 +163,31 @@ select fi.titulo, max(estrelas) - min(estrelas) as diferenca_classificacao
     group by fi.titulo 
     order by diferenca_classificacao desc, fi.titulo asc;
 
+-- 13. Listar a diferença entre as médias das classificações dos filmes produzidos antes de 1980 e no
+-- ano de 1980 e seguintes. Deve ser calculada a média da classificação para cada filme e depois
+-- calculada a média das médias para os filmes anteriores a 1980 e os produzidos nos anos de 1980 e seguintes.
+
+select 
+    (select avg(fi_avg_geral.avg_classificacao_filme) avg_classificacao_filme
+        from Filme fi
+        join (select fi.fID,fi.ano,avg(estrelas) avg_classificacao_filme
+                from Filme fi 
+                join Classificacao cl 
+                    on fi.fID = cl.fID
+                group by fi.fID, fi.ano) fi_avg_geral
+        on fi.fID = fi_avg_geral.fId
+        and fi.ano < 1980 ) 
+    -
+    (select avg(fi_avg_geral.avg_classificacao_filme) avg_classificacao_filme
+        from Filme fi
+        join (select fi.fID,fi.ano,avg(estrelas) avg_classificacao_filme
+                from Filme fi 
+                join Classificacao cl 
+                    on fi.fID = cl.fID
+                 group by fi.fID, fi.ano) fi_avg_geral
+        on fi.fID = fi_avg_geral.fId
+        and fi.ano >= 1980) as diferenca_media_antes_1980_a_partir_1980
+
+          
+    
+
