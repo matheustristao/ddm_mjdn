@@ -188,6 +188,30 @@ select
         on fi.fID = fi_avg_geral.fId
         and fi.ano >= 1980) as diferenca_media_antes_1980_a_partir_1980
 
-          
+-- 14. Para todos os realizadores de mais de um filme, listar o seu nome e os títulos dos filmes que
+-- realizaram, ordenados por nome do realizador, título do filme.
+    select fi.realizador, fi.titulo
+        from Filme fi 
+        where realizador in(
+            select realizador
+                from Filme
+                group by realizador
+                HAVING count(*) > 1)
+        order by fi.realizador, fi.titulo;
+
+--15. Listar o(s) título(s) do(s)filme(s) com a maior média de classificações, bem como essa média.
+
+--16. Para cada par filme, crítico (título do filme e nome do crítico) liste o nº de classificações (um
+--    filme pode ser avaliado mais do que uma vez por um crítico, em datas diferentes). Listar também
+--    o nº de classificações por filme e por crítico, bem como o nº total de classificações.
+
+--17. Apresente o ranking dos filmes por ordem descendente de média de classificação.
+
+--18. Para cada realizador, apresente o ranking dos seus filmes por ordem descendente de média de classificação.
+
+--19. Acrescente à Tabela Filme os atributos duracao (int) e lucro_bruto (numeric (5,2). Crie as
+--     tabelas Ator (aid, nome) e Ator_Filme (aid, fid) que representam respetivamente os atores e os
+--     filmes em que participaram. Tipos de dados dos atributos: aid (int), nome (varchar(30)). Não se
+--     esqueça de identificar as chaves primárias e estrangeiras nas tabelas criadas.           
     
 
