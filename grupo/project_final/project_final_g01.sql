@@ -27,3 +27,14 @@ select distinct f.titulo
         (select c.cID
             from Classificacao c 
             where f.fID = c.fID);
+
+-- 4. Escrever uma query que apresenta as classificações no seguinte formato: nome do crítico, título
+--    do filme, nº de estrelas e data da classificação. Ordene o resultado por esta ordem: nome do
+--    crítico, título do filme, nº de estrelas.            
+select cr.nome, fi.titulo, cl.estrelas, cl.dataClassificacao
+    from Critico cr 
+    join Classificacao cl 
+        on cl.cID = cr.cID
+    join Filme fi 
+        on fi.fID = cl.fID
+    order by cr.nome, fi.titulo, cl.estrelas        
