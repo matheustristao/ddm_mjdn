@@ -211,6 +211,15 @@ select
 --    filme pode ser avaliado mais do que uma vez por um crítico, em datas diferentes). Listar também
 --    o nº de classificações por filme e por crítico, bem como o nº total de classificações.
 
+select fi.titulo, cr.nome, count(*) num_classificacoes
+    from Filme fi 
+    join Classificacao cl 
+        on fi.fID = cl.fID
+    join Critico cr 
+        on cl.cID = cr.cID   
+    group by cube (fi.titulo, cr.nome)  
+    order by fi.titulo, cr.nome
+
 --17. Apresente o ranking dos filmes por ordem descendente de média de classificação.
 
 --18. Para cada realizador, apresente o ranking dos seus filmes por ordem descendente de média de classificação.
