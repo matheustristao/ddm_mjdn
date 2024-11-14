@@ -200,6 +200,12 @@ select
         order by fi.realizador, fi.titulo;
 
 --15. Listar o(s) título(s) do(s)filme(s) com a maior média de classificações, bem como essa média.
+    select top 3 fi.titulo,avg(estrelas) avg_classificacao_filme
+        from Filme fi 
+        join Classificacao cl 
+            on fi.fID = cl.fID
+        group by fi.titulo
+        order by avg(estrelas) desc;
 
 --16. Para cada par filme, crítico (título do filme e nome do crítico) liste o nº de classificações (um
 --    filme pode ser avaliado mais do que uma vez por um crítico, em datas diferentes). Listar também
