@@ -221,6 +221,13 @@ select fi.titulo, cr.nome, count(*) num_classificacoes
     order by fi.titulo, cr.nome
 
 --17. Apresente o ranking dos filmes por ordem descendente de média de classificação.
+select fi.titulo, avg(cl.estrelas) as media_classificacao, dense_rank() over (order by avg(cl.estrelas) desc) AS rank
+    from Filme fi 
+    join Classificacao cl 
+        on fi.fID = cl.fID
+    group by fi.titulo     
+    order by  avg(cl.estrelas) desc   
+
 
 --18. Para cada realizador, apresente o ranking dos seus filmes por ordem descendente de média de classificação.
 
