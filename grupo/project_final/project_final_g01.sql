@@ -8,7 +8,6 @@
 */
 
 -- 1. Listar os títulos de todos os filmes dirigidos por Steven Spielberg.
-
 select titulo
     from Filme 
     where realizador = 'Steven Spielberg';
@@ -20,5 +19,11 @@ select distinct f.ano
         on f.fID = c.fID
     where c.estrelas in (4,5)
     order by f.ano;  
-    
-        
+
+-- 3. Listar os títulos de todos os filmes que não têm nenhuma classificação.
+select distinct f.titulo
+    from Filme f 
+    where not EXISTS
+        (select c.cID
+            from Classificacao c 
+            where f.fID = c.fID);
