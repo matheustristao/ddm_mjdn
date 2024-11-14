@@ -82,3 +82,15 @@ select fi.titulo, Max_classificacao.estrelas
         group by fID) Max_classificacao
     on fi.fID = Max_classificacao.fID
     order by fi.titulo;
+
+-- 7. Para cada filme com pelo menos uma classificação, listar os seus títulos e as médias das
+-- classificações por ordem decrescente destas últimas. Listar por ordem alfabética os filmes com
+-- as mesmas médias.
+select fi.titulo, Avg_classificacao.estrelas
+    from Filme fi 
+    join 
+    (select fID, avg(estrelas) estrelas
+        from Classificacao cl 
+        group by fID) Avg_classificacao
+    on fi.fID = Avg_classificacao.fID
+    order by Avg_classificacao.estrelas desc, fi.titulo asc;
