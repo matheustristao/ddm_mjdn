@@ -70,5 +70,15 @@ select cr.nome, fi.titulo, cl.estrelas, cl.dataClassificacao
         on fi.fID = cl.fID
     join Critico cr 
         on cr.cID = cl.cID        
-    where cl_classificacao_inicial.estrelas_classificacao_inicial < cl_classificacao_posterior.estrelas_classificacao_posterior        
+    where cl_classificacao_inicial.estrelas_classificacao_inicial < cl_classificacao_posterior.estrelas_classificacao_posterior;  
 
+-- 6. Para cada filme com pelo menos uma classificação, pesquisar a classificação máxima que lhe foi
+--    atribuída. Listar o título do filme e a classificação máxima, ordenando por título do filme
+select fi.titulo, Max_classificacao.estrelas
+    from Filme fi 
+    join 
+    (select fID, MAX(estrelas) estrelas
+        from Classificacao cl 
+        group by fID) Max_classificacao
+    on fi.fID = Max_classificacao.fID
+    order by fi.titulo;
