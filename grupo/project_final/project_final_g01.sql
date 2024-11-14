@@ -226,10 +226,18 @@ select fi.titulo, avg(cl.estrelas) as media_classificacao, dense_rank() over (or
     join Classificacao cl 
         on fi.fID = cl.fID
     group by fi.titulo     
-    order by  avg(cl.estrelas) desc   
+    order by  avg(cl.estrelas) desc; 
 
 
 --18. Para cada realizador, apresente o ranking dos seus filmes por ordem descendente de média de classificação.
+
+select fi.realizador, avg(cl.estrelas) as media_classificacao, dense_rank() over (order by avg(cl.estrelas) desc) AS rank
+    from Filme fi 
+    join Classificacao cl 
+        on fi.fID = cl.fID
+    group by fi.realizador     
+    order by  avg(cl.estrelas) desc;
+
 
 --19. Acrescente à Tabela Filme os atributos duracao (int) e lucro_bruto (numeric (5,2). Crie as
 --     tabelas Ator (aid, nome) e Ator_Filme (aid, fid) que representam respetivamente os atores e os
