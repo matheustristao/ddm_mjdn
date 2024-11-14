@@ -106,6 +106,7 @@ select cr.nome
 
 -- 9. Adicione à base de dados uma classificação de 4 estrelas da crítica Ana Santos para o filme Star Wars com data do dia em que foi atribuída essa classificação. Utilize um único comando de SQL.        
 
+-- INHA JÁ INSERIDA. NÃO CORRA NOVAMENTE, CASO CONTRÁRIO IRÁ INSERIR UMA LINHA DUPLICADA
 insert into Classificacao (cID,fID,estrelas,dataClassificacao)
     values (
         (select cID from Critico where nome = 'Ana Santos'),
@@ -114,4 +115,12 @@ insert into Classificacao (cID,fID,estrelas,dataClassificacao)
         CAST(GETDATE() AS DATE)
      );
 
+-- 10. Atualizar para 5 a classificação atribuída pela crítica Sara Martins ao filme Gone with the Wind
+-- em 2011-01-27, porque a anterior estava errada. Não altere a data porque é a correção de um erro 
+-- e utilize um único comando de SQL.
+update Classificacao 
+    set estrelas = 5 
+    where cId = (select cId from Critico where nome = 'Sara Martins')
+    and fID = (select fID from Filme where titulo = 'Gone with the Wind')
+    and dataClassificacao = '2011-01-27';
 
