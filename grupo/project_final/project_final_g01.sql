@@ -151,6 +151,15 @@ select fi.titulo, fi.realizador, cr.nome, cl.estrelas, cl.dataClassificacao,Fi_a
                 on cr_aux.cID = cl_aux.cID
             group by cr_aux.cID
     ) Cr_avg
-        on cr.cID = Cr_avg.cID
+        on cr.cID = Cr_avg.cID;
         
+-- 12. Para cada filme, listar o seu título e a diferença entre a classificação mais alta e mais baixa que
+-- lhe foram atribuídas. Ordenar por ordem descendente da diferença de classificações e depois
+-- pelo título do filme.
+select fi.titulo, max(estrelas) - min(estrelas) as diferenca_classificacao
+    from Filme fi 
+    join Classificacao cl 
+        on fi.fID = cl.fID
+    group by fi.titulo 
+    order by diferenca_classificacao desc, fi.titulo asc;
 
