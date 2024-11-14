@@ -38,3 +38,37 @@ select cr.nome, fi.titulo, cl.estrelas, cl.dataClassificacao
     join Filme fi 
         on fi.fID = cl.fID
     order by cr.nome, fi.titulo, cl.estrelas        
+
+-- 5. Em todos os casos em que o mesmo crítico classificou o mesmo filme mais do que uma vez,
+--    sendo uma classificação posterior superior a uma anterior, listar o nome do crítico e o título do filme
+
+ select distinct cr.nome, fi.titulo
+    from Classificacao cl 
+    join (select cl_posterior.cID, cl_posterior.fID, cl_posterior.estrelas as estrelas_classificacao_posterior,cl_group.classificacao_posterior
+            from Classificacao cl_posterior
+            join (select cID, fID, max(dataClassificacao) classificacao_posterior
+                    from Classificacao      
+                    group by cID, fID
+                    having count(*) > 1) cl_group
+            on cl_posterior.cID = cl_group.cID
+            and cl_posterior.fID = cl_group.fID     
+            and cl_posterior.dataClassificacao = cl_group.classificacao_posterior) cl_classificacao_posterior   
+    on cl.cID = cl_classificacao_posterior.cID
+    and cl.fID = cl_classificacao_posterior.fID
+    join (select cl_inicial.cID, cl_inicial.fID, cl_inicial.estrelas as estrelas_classificacao_inicial, cl_group.classificacao_inicial
+            from Classificacao cl_inicial
+            join (select cID, fID, min(dataClassificacao) classificacao_inicial
+                    from Classificacao      
+                    group by cID, fID
+                    having count(*) > 1) cl_group
+            on cl_inicial.cID = cl_group.cID
+            and cl_inicial.fID = cl_group.fID     
+            and cl_inicial.dataClassificacao = cl_group.classificacao_inicial) cl_classificacao_inicial 
+    on cl.cID = cl_classificacao_inicial.cID
+    and cl.fID = cl_classificacao_inicial.fID    
+    join Filme fi 
+        on fi.fID = cl.fID
+    join Critico cr 
+        on cr.cID = cl.cID        
+    where cl_classificacao_inicial.estrelas_classificacao_inicial < cl_classificacao_posterior.estrelas_classificacao_posterior        
+
