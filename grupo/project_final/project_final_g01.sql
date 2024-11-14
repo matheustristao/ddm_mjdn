@@ -94,3 +94,24 @@ select fi.titulo, Avg_classificacao.estrelas
         group by fID) Avg_classificacao
     on fi.fID = Avg_classificacao.fID
     order by Avg_classificacao.estrelas desc, fi.titulo asc;
+
+-- 8. Listar os nomes de todos os críticos que contribuíram com 3 ou mais classificações.
+select cr.nome
+    from Critico cr 
+    where cr.cID in (
+        select cID
+            from Classificacao
+        group by cID
+        having count(*) >= 3);
+
+-- 9. Adicione à base de dados uma classificação de 4 estrelas da crítica Ana Santos para o filme Star Wars com data do dia em que foi atribuída essa classificação. Utilize um único comando de SQL.        
+
+insert into Classificacao (cID,fID,estrelas,dataClassificacao)
+    values (
+        (select cID from Critico where nome = 'Ana Santos'),
+        (select fID from Filme where titulo = 'Star Wars'),
+        4,
+        CAST(GETDATE() AS DATE)
+     );
+
+
