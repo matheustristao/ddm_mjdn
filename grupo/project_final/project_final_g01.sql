@@ -12,3 +12,13 @@
 select titulo
     from Filme 
     where realizador = 'Steven Spielberg';
+
+-- 2. Listar todos os anos em que foi produzido um filme que recebeu uma classificação de 4 ou 5, e ordene-os por ordem crescente.
+select distinct f.ano
+    from Filme f 
+    join Classificacao c 
+        on f.fID = c.fID
+    where c.estrelas in (4,5)
+    order by f.ano;  
+    
+        
