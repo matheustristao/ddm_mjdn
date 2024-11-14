@@ -106,14 +106,17 @@ select cr.nome
 
 -- 9. Adicione à base de dados uma classificação de 4 estrelas da crítica Ana Santos para o filme Star Wars com data do dia em que foi atribuída essa classificação. Utilize um único comando de SQL.        
 
--- INHA JÁ INSERIDA. NÃO CORRA NOVAMENTE, CASO CONTRÁRIO IRÁ INSERIR UMA LINHA DUPLICADA
-insert into Classificacao (cID,fID,estrelas,dataClassificacao)
+-- LINHA JÁ INSERIDA. NÃO CORRA NOVAMENTE, CASO CONTRÁRIO IRÁ INSERIR UMA LINHA DUPLICADA
+-- Insert comentado para evitar nova inserção
+/*
+    insert into Classificacao (cID,fID,estrelas,dataClassificacao)
     values (
         (select cID from Critico where nome = 'Ana Santos'),
         (select fID from Filme where titulo = 'Star Wars'),
         4,
         CAST(GETDATE() AS DATE)
      );
+*/
 
 -- 10. Atualizar para 5 a classificação atribuída pela crítica Sara Martins ao filme Gone with the Wind
 -- em 2011-01-27, porque a anterior estava errada. Não altere a data porque é a correção de um erro 
@@ -123,4 +126,31 @@ update Classificacao
     where cId = (select cId from Critico where nome = 'Sara Martins')
     and fID = (select fID from Filme where titulo = 'Gone with the Wind')
     and dataClassificacao = '2011-01-27';
+
+-- 11. Para cada filme liste uma linha para cada classificação que obteve com os seguintes atributos:
+-- título do filme, nome do realizador, nome do crítico, classificação, data da classificação,
+-- classificação média do filme e classificação média do crítico, ordenado por nº do filme, nº do crítico.
+select fi.titulo, fi.realizador, cr.nome, cl.estrelas, cl.dataClassificacao,Fi_avg.avg_classificacao_filme ,Cr_avg.avg_classificacao_critico
+    from Filme fi 
+    join Classificacao cl 
+        on fi.fID = cl.fID
+    join Critico cr
+        on cr.cID = cl.cID
+    join (
+        select fi_aux.fID, AVG(estrelas) avg_classificacao_filme
+            from Filme fi_aux 
+            join Classificacao cl_aux 
+                on fi_aux.fID = cl_aux.fID
+            group by fi_aux.fID
+    ) Fi_avg   
+        on fi.fID = Fi_avg.fID     
+    join (
+        select cr_aux.cID, AVG(estrelas) avg_classificacao_critico
+            from Critico cr_aux 
+            join Classificacao cl_aux 
+                on cr_aux.cID = cl_aux.cID
+            group by cr_aux.cID
+    ) Cr_avg
+        on cr.cID = Cr_avg.cID
+        
 
