@@ -13,5 +13,18 @@ select h.idfilho "idpeca-filho",
     left join hch h
         on p.idpeca = h.idpai
     left join peca p_filho
-        on h.idfilho = p_filho.idpeca        
+        on h.idfilho = p_filho.idpeca;
+
+-- 52. Liste o ProductNumber, Name e média do preço de venda dos Produtos em que essa média é
+--     superior à média do preço de venda de todos os produtos. Ordene por média do preço de venda
+--     descendente.              
+
+select ProductNumber, Name, avg(ListPrice) avg_listPrice
+    from Product p
+    group by ProductNumber, Name
+    having avg(ListPrice) > (
+        select avg(ListPrice)
+            from Product
+    )
+    order by avg(ListPrice) desc;
                       
