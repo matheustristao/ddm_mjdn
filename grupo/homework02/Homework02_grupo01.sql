@@ -28,6 +28,9 @@ select ProductNumber, Name, avg(ListPrice) avg_listPrice
     )
     order by avg(ListPrice) desc;
 
+-- 19. 
+
+
 -- 23. Liste o Código das categorias, o código do modelo, o código dos produtos e o somatório de
 -- vendas por: código de categoria, (código de categoria, código do modelo),
 -- (código de categoria, código do modelo, código de produto) e total geral    
@@ -35,4 +38,13 @@ select ProductNumber, Name, avg(ListPrice) avg_listPrice
 select ProductCategoryID, ProductModelID, ProductNumber, sum(ListPrice) sum_ListPrice
     from Product
     group by rollup(ProductCategoryID, ProductModelID, ProductNumber);
+                      
+-- 24. Liste o Código das categorias, o código do modelo, o código dos produtos e o somatório de
+-- vendas por: código de categoria, código de modelo, código de produto, (código de categoria,
+-- código do modelo), (código de categoria, código de produto), (código de modelo, código de produto) e
+-- (código de categoria, código do modelo, código de produto) e total geral
+
+select ProductCategoryID, ProductModelID, ProductNumber, sum(ListPrice) sum_ListPrice
+    from Product
+    group by cube(ProductCategoryID, ProductModelID, ProductNumber);
                       
