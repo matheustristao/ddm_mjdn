@@ -77,5 +77,5 @@ select p.ProductCategoryID, p.ProductModelID, p.ProductID, sum(LineTotal) "Somat
     from Product p join SalesOrderDetail sod
     on p.productID = sod.ProductID
     group by grouping sets (p.ProductCategoryID, p.ProductModelID, p.ProductID, (p.ProductCategoryID, p.ProductModelID)
-    , (p.ProductCategoryID, p.ProductID), (p.ProductModelID, p.ProductID)
-    , (p.ProductCategoryID, p.ProductModelID, p.ProductID),());
+        , (p.ProductCategoryID, p.ProductID), (p.ProductModelID, p.ProductID)
+        , (p.ProductCategoryID, p.ProductModelID, p.ProductID),());
