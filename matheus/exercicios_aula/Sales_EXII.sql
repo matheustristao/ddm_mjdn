@@ -224,7 +224,21 @@ select cus.CompanyName, cus.Title, cus.FirstName, cus.LastName, cus.EmailAddress
         on cus.CustomerID = sod.CustomerID      
     order by cus.CompanyName;   
 
+select cus.CompanyName, cus.Title, cus.FirstName, cus.LastName, cus.EmailAddress, cus.Phone, 
+       sum(TotalDue) over (partition by cus.CustomerID order by cus.CustomerID) as SumTotalDue
+    from Customer cus 
+    join SalesOrderHeader soh   
+        on cus.CustomerID = soh.CustomerID
+    order by cus.CompanyName;        
+
 
 -- 51
 select CompanyName, Title, FirstName, isnull(MiddleName,'') as MiddleName, LastName, isnull(Suffix,'') Sufix
-    from Customer       
+    from Customer     
+
+-- 53 
+select pr.ProductID, sod.SalesOrderID, sod.OrderQty, sod.LineTotal, 
+       avg(sod.LineTotal) over(partition by pr.ProductID order by pr.Productid) as avg_vendas
+from Product pr     
+join SalesOrderDetail sod 
+    on pr.ProductID = sod.ProductID
