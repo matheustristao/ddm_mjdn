@@ -238,7 +238,7 @@ select CompanyName, Title, FirstName, isnull(MiddleName,'') as MiddleName, LastN
 
 -- 53 
 select pr.ProductID, sod.SalesOrderID, sod.OrderQty, sod.LineTotal, 
-       avg(sod.LineTotal) over(partition by pr.ProductID order by pr.Productid) as avg_vendas
+       avg(sod.LineTotal) over(order by pr.Productid) as avg_vendas
 from Product pr     
 join SalesOrderDetail sod 
     on pr.ProductID = sod.ProductID
