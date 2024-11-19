@@ -12,3 +12,25 @@ select *
             from Customer cus) as subquery
     where Sum is not null        
     order by CompanyName;        
+
+select cus.CompanyName, cus.Title, cus.FirstName, cus.LastName, cus.EmailAddress, cus.Phone, totalduesum
+    from Customer cus
+    join (select CustomerID, sum(TotalDue) totalduesum 
+                    from SalesOrderHeader
+                    group by CustomerID ) sod 
+        on cus.CustomerID = sod.CustomerID      
+    order by cus.CompanyName;   
+
+
+WITH cte_mediaproduto AS
+    (Select ProductNumber, avg(unitprice) mediaproduto
+        from salesorderdetail sod 
+        join product p 
+            on p.productid=sod.productid
+        group by ProductNumber
+    )
+
+    Select ProductNumber, mediaproduto As MaxMedia
+        from cte_mediaproduto
+        where mediaproduto= (Select max(mediaproduto) from cte_mediaproduto);
+
