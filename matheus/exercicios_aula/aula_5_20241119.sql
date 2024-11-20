@@ -8,7 +8,10 @@ select cus.CompanyName, cus.Title, cus.FirstName, cus.LastName, cus.EmailAddress
 select *
     from (
         select cus.CompanyName, cus.Title, cus.FirstName, cus.LastName, cus.EmailAddress, cus.Phone, 
-              (select sum(TotalDue) from SalesOrderHeader sod where sod.CustomerId = cus.CustomerID group by sod.CustomerId ) as Sum
+              (select sum(TotalDue) 
+                    from SalesOrderHeader sod 
+                    where sod.CustomerId = cus.CustomerID 
+                    group by sod.CustomerId ) as Sum
             from Customer cus) as subquery
     where Sum is not null        
     order by CompanyName;        
