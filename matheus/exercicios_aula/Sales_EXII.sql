@@ -275,6 +275,16 @@ select pr.ProductModelID, pr.ProductId, sum(sod.LineTotal) sum_line_total,
         on pr.ProductID = sod.ProductID
     group by pr.ProductModelID, pr.ProductId;
 
+-- 27 
+select * from (
+select pc.Name as "Category Name", pr.Name as "Product Name", pr.ListPrice, 
+       rank() over (partition by pc.Name order by pr.ListPrice asc) rank_pr
+    from ProductCategory pc 
+    join Product pr 
+        on pc.ProductCategoryID = pr.ProductCategoryID) rank_select
+    where rank_pr = 1
+    order by 1;
+
 -- 44
 
 with cus_sum as (
