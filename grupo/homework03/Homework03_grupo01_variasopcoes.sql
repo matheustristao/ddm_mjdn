@@ -69,3 +69,9 @@ Para cada categoria (nome) liste os produtos dessa categoria (name), a soma das 
 (linetotal) desses produtos, bem como a função de distribuição acumulada relativa a essa soma,
 arredondada a duas casas decimais.*/
 
+select pc.name, p.Name, sum(linetotal),
+round(cume_dist() over (partition by pc.name order by sum(linetotal)),2) 'distribuição'
+from Product p
+join ProductCategory pc on p.ProductcategoryID = pc.ProductCategoryID
+join SalesOrderDetail sod on p.ProductID = sod.ProductID
+group by pc.name, p.Name
