@@ -98,6 +98,26 @@ select pr.ProductID, ProductNumber, name
             where sod.ProductID = pr.ProductID
     );
 
+-- 13
+
+with media_produto as (
+    select pr.ProductID, ProductModelID, avg(LineTotal) avg_line_total
+        from Product pr 
+        join SalesOrderDetail sod 
+            on sod.ProductID = pr.ProductID
+        group by  pr.ProductID, ProductModelID 
+)
+select avg(avg_line_total) as "Média das médias"
+from media_produto;
+
+select avg(avg_line_total) as "Média das médias"
+from (
+select pr.ProductID, ProductModelID, avg(LineTotal) avg_line_total
+    from Product pr 
+    join SalesOrderDetail sod 
+        on sod.ProductID = pr.ProductID
+    group by  pr.ProductID, ProductModelID ) as media_das_medias
+
 -- 14 
 select count(*)
     from Customer cus 
@@ -181,7 +201,128 @@ group by GROUPING sets(parentproductcategoryid,
                       p.productid,
                       ());
 
+-- 43
+select ProductNumber, StandardCost, SalesOrderID, UnitPrice, 
+    avg(UnitPrice) over (partition by productnumber) as "media preço produto"
+    from Product pr
+    join salesOrderDetail sod 
+        on sod.ProductID = pr.ProductID
+        order by 1;
+
+with avg_sales_product as (
+    select ProductNumber, avg(UnitPrice) AVG_Unit_Price
+    from Product pr
+    join salesOrderDetail sod 
+        on sod.ProductID = pr.ProductID
+    group by ProductNumber         
+) 
+
+select pr.ProductNumber, StandardCost, SalesOrderID, UnitPrice, AVG_Unit_Price
+    from Product pr
+    join salesOrderDetail sod 
+        on sod.ProductID = pr.ProductID
+    join avg_sales_product  asp 
+        on pr.ProductNumber = asp.ProductNumber  
+    order by 1; 
+
+
+select pr.ProductNumber, StandardCost, SalesOrderID, UnitPrice, AVG_Unit_Price
+    from Product pr
+    join salesOrderDetail sod 
+        on sod.ProductID = pr.ProductID
+    join (
+        select ProductNumber, avg(UnitPrice) AVG_Unit_Price
+            from Product pr
+            join salesOrderDetail sod 
+                on sod.ProductID = pr.ProductID
+            group by ProductNumber   
+    )  asp 
+        on pr.ProductNumber = asp.ProductNumber  
+    order by 1; 
+
+
+select pr.ProductNumber, StandardCost, SalesOrderID, UnitPrice, (select avg(UnitPrice) 
+                                                                    from Product pr_aux
+                                                                    join salesOrderDetail sod 
+                                                                        on sod.ProductID = pr_aux.ProductID
+                                                                    where pr_aux.ProductID = pr.ProductID
+                                                                    group by ProductNumber ) as avg_unit
+    from Product pr
+    join salesOrderDetail sod 
+        on sod.ProductID = pr.ProductID
+    order by 1; 
+
+select pr.ProductNumber, StandardCost, SalesOrderID, UnitPrice, AVG_Unit_Price
+    from Product pr
+    join salesOrderDetail sod 
+        on sod.ProductID = pr.ProductID
+    join (
+        select ProductNumber, avg(UnitPrice) AVG_Unit_Price
+            from Product pr
+            join salesOrderDetail sod 
+                on sod.ProductID = pr.ProductID
+            group by ProductNumber   
+    )  asp 
+        on pr.ProductNumber = asp.ProductNumber  
+    order by 1; 
+
+-- 26 
+
+select pr.ProductModelID, pr.ProductId, sum(sod.LineTotal) sum_line_total,
+       RANK() over(partition by ProductModelID order by sum(sod.LineTotal) desc) as rank_prod
+    from Product pr 
+    join SalesOrderDetail sod 
+        on pr.ProductID = sod.ProductID
+    group by pr.ProductModelID, pr.ProductId;
+
+-- 27 
+select * from (
+select pc.Name as "Category Name", pr.Name as "Product Name", pr.ListPrice, 
+       rank() over (partition by pc.Name order by pr.ListPrice asc) rank_pr
+    from ProductCategory pc 
+    join Product pr 
+        on pc.ProductCategoryID = pr.ProductCategoryID) rank_select
+    where rank_pr = 1
+    order by 1;
+
+-- 44
+
+with cus_sum as (
+    select CustomerID, sum(TotalDue) totalduesum 
+        from SalesOrderHeader
+        group by CustomerID 
+    ) 
+
+    select cus.CompanyName, cus.Title, cus.FirstName, cus.LastName, cus.EmailAddress, cus.Phone, totalduesum
+        from Customer cus  
+        join cus_sum cs
+            on cus.CustomerID = cs.CustomerID      
+    order by cus.CompanyName; 
+
+
+select cus.CompanyName, cus.Title, cus.FirstName, cus.LastName, cus.EmailAddress, cus.Phone, totalduesum
+    from Customer cus
+    join (select CustomerID, sum(TotalDue) totalduesum 
+                    from SalesOrderHeader
+                    group by CustomerID ) sod 
+        on cus.CustomerID = sod.CustomerID      
+    order by cus.CompanyName;   
+
+select cus.CompanyName, cus.Title, cus.FirstName, cus.LastName, cus.EmailAddress, cus.Phone, 
+       sum(TotalDue) over (partition by cus.CustomerID order by cus.CustomerID) as SumTotalDue
+    from Customer cus 
+    join SalesOrderHeader soh   
+        on cus.CustomerID = soh.CustomerID
+    order by cus.CompanyName;        
+
 
 -- 51
 select CompanyName, Title, FirstName, isnull(MiddleName,'') as MiddleName, LastName, isnull(Suffix,'') Sufix
-    from Customer       
+    from Customer     
+
+-- 53 
+select pr.ProductID, sod.SalesOrderID, sod.OrderQty, sod.LineTotal, 
+       avg(sod.LineTotal) over(order by pr.Productid) as avg_vendas
+from Product pr     
+join SalesOrderDetail sod 
+    on pr.ProductID = sod.ProductID

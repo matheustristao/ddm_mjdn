@@ -20,14 +20,14 @@ select p_filho.idpeca "idpeca-filho",
 /* Exerc. 52 - Liste o ProductNumber, Name e média do preço de venda dos Produtos em que essa média é
 superior à média do preço de venda de todos os produtos. Ordene por média do preço de venda descendente. */
 
-select ProductNumber, Name, avg(ListPrice) "média do preço de venda"
-    from Product p
+select ProductNumber, Name, avg(UnitPrice) "média do preço de venda"
+    from Product p left join SalesOrderDetail sod on p.ProductID=sod.ProductID
     group by ProductNumber, Name
-    having avg(ListPrice) > (
-        select avg(ListPrice)
-            from Product
+    having avg(UnitPrice) > (
+        select avg(UnitPrice)
+            from SalesOrderDetail
     )
-    order by avg(ListPrice) desc;
+    order by avg(UnitPrice) desc;
 
 /* Exerc. 19 - Liste a média das vendas em valor para o par (modelo, produto), para os casos em que essa
 média é superior à média das vendas do respetivo modelo */
