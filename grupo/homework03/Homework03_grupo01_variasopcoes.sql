@@ -41,7 +41,7 @@ select CountryRegion, count(*) 'numero de clientes', sum(sum_totaldue) 'soma de 
 from cte_SumTotalDue
 group by CountryRegion;
 
---using WINDOWS FUNCTION
+--Using WINDOWS FUNCTION
 select countryregion, count(*), sum(sum_totaldue)
 from 
 (select countryregion, c.customerid,
@@ -56,4 +56,16 @@ group by CountryRegion;
 /*Exercico II - Exerc. 48
 Para cada categoria (nome) liste o número de produtos dessa categoria, bem como a função de
 distribuição acumulada relativa a esse número de produtos, arredondada a duas casas decimais.*/
+
+select pc.Name, count(p.ProductID) 'numero de produtos',
+round(cume_dist() over (order by count(p.ProductID)),2) 'distribuição'
+from Product p
+join ProductCategory pc on p.ProductcategoryID = pc.ProductCategoryID
+group by pc.name
+order by distribuição desc
+
+/*Exercio II - Exerc. 54
+Para cada categoria (nome) liste os produtos dessa categoria (name), a soma das vendas
+(linetotal) desses produtos, bem como a função de distribuição acumulada relativa a essa soma,
+arredondada a duas casas decimais.*/
 
