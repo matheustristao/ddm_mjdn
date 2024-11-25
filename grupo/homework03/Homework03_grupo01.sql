@@ -11,11 +11,25 @@ from customer c join SalesOrderHeader sod
 on c.CustomerID = sod.CustomerID) x
 where rank_totaldue = 1
 
+
 /* Exercicio II - Exerc. 12
 Por CountryRegion liste o número de Clientes que fizeram encomendas cuja soma é superior a
 $50000, bem como esse somatório por CountryRegion*/
 
---Using only aggregations
+-- Using WINDOWS FUNCTION é a melhor opção para resolver o exercicio
+select countryregion, count(*), sum(sum_totaldue)
+from 
+(select countryregion, c.customerid,
+sum(totaldue) over (partition by countryregion, c.customerid order by countryregion,c.customerid desc) sum_totaldue
+from Customer c
+join CustomerAddress ca on c.CustomerID = ca.CustomerID
+join Address a on ca.AddressID = a.AddressID
+join SalesOrderHeader sod on c.CustomerID = sod.CustomerID) x
+where sum_totaldue > 50000
+group by CountryRegion;
+
+-- Mas existem mais alternativas de resolução
+-- Using only aggregations
 select CountryRegion, count(*) 'numero de clientes', sum(sum_totaldue) 'soma de vendas por countryregion'
 from
 (select CountryRegion, c.customerid, sum(TotalDue) sum_totaldue
@@ -27,7 +41,7 @@ group by CountryRegion, c.CustomerID
 having sum(TotalDue) > 50000) x
 group by CountryRegion;
 
---Using WITH
+-- Using WITH
 with cte_SumTotalDue AS
 (select CountryRegion, c.customerid, sum(TotalDue) sum_totaldue
 from Customer c
@@ -41,17 +55,6 @@ select CountryRegion, count(*) 'numero de clientes', sum(sum_totaldue) 'soma de 
 from cte_SumTotalDue
 group by CountryRegion;
 
---Using WINDOWS FUNCTION
-select countryregion, count(*), sum(sum_totaldue)
-from 
-(select countryregion, c.customerid,
-sum(totaldue) over (partition by countryregion, c.customerid order by countryregion,c.customerid desc) sum_totaldue
-from Customer c
-join CustomerAddress ca on c.CustomerID = ca.CustomerID
-join Address a on ca.AddressID = a.AddressID
-join SalesOrderHeader sod on c.CustomerID = sod.CustomerID) x
-where sum_totaldue > 50000
-group by CountryRegion;
 
 /*Exercico II - Exerc. 48
 Para cada categoria (nome) liste o número de produtos dessa categoria, bem como a função de
@@ -63,6 +66,7 @@ from Product p
 join ProductCategory pc on p.ProductcategoryID = pc.ProductCategoryID
 group by pc.name
 order by distribuicao desc
+
 
 /*Exercio II - Exerc. 54
 Para cada categoria (nome) liste os produtos dessa categoria (name), a soma das vendas
@@ -77,7 +81,7 @@ join SalesOrderDetail sod on p.ProductID = sod.ProductID
 group by pc.name, p.Name
 order by 1 asc, 4 desc;
 
-
+-- Como alterantiva e usando o WITH para agregar o join no select
 -- Using WITH
 with sum_cte as (
     select pc.name categoryName, p.Name productName, sum(linetotal) sum_line_total
