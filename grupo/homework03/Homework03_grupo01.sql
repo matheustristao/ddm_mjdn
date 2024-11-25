@@ -9,7 +9,7 @@ from
 (select c.customerid, companyname, salesorderid, totaldue, rank() over (order by totaldue desc) rank_totaldue
 from customer c join SalesOrderHeader sod
 on c.CustomerID = sod.CustomerID) x
-where rank_totaldue = 1
+where rank_totaldue = 1;
 
 
 /* Exercicio II - Exerc. 12
@@ -17,7 +17,7 @@ Por CountryRegion liste o número de Clientes que fizeram encomendas cuja soma �
 $50000, bem como esse somatório por CountryRegion*/
 
 -- Using WINDOWS FUNCTION é a melhor opção para resolver o exercicio
-select countryregion, count(*), sum(sum_totaldue)
+select countryregion, count(*) 'numero de clientes' , sum(sum_totaldue) 'soma de vendas por countryregion'
 from 
 (select countryregion, c.customerid,
 sum(totaldue) over (partition by countryregion, c.customerid order by countryregion,c.customerid desc) sum_totaldue
@@ -65,7 +65,7 @@ round(cume_dist() over (order by count(p.ProductID)),2) distribuicao
 from Product p
 join ProductCategory pc on p.ProductcategoryID = pc.ProductCategoryID
 group by pc.name
-order by distribuicao desc
+order by distribuicao desc;
 
 
 /*Exercio II - Exerc. 54
