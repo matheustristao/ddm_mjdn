@@ -79,7 +79,7 @@ from Product p
 join ProductCategory pc on p.ProductcategoryID = pc.ProductCategoryID
 join SalesOrderDetail sod on p.ProductID = sod.ProductID
 group by pc.name, p.Name
-order by 1 asc, 4 desc;
+order by categoryName asc, distribuicao desc;
 
 -- Como alterantiva e usando o WITH para agregar o join no select
 -- Using WITH
@@ -96,4 +96,4 @@ with sum_cte as (
 select categoryName, productName, sum_line_total,
        round(cume_dist() over (partition by categoryName order by sum_line_total),2) distribuicao
 from sum_cte
-order by 1 asc, 4 desc;
+order by categoryName asc, distribuicao desc;
