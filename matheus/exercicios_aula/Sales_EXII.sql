@@ -285,6 +285,23 @@ select pc.Name as "Category Name", pr.Name as "Product Name", pr.ListPrice,
     where rank_pr = 1
     order by 1;
 
+-- 28
+    select * from Classificacao;
+
+    insert into Classificacao (cID,fID,estrelas,dataClassificacao)
+    values (
+        (select cID from Critico where nome = 'Sara Martins'),
+        (select fID from Filme where titulo = 'Avatar'),
+        4,
+        '2021-05-25'
+         ),
+         (
+        (select cID from Critico where nome = 'Daniel Morgado'),
+        (select fID from Filme where titulo = 'E.T.'),
+        5,
+        GETDATE()
+         );    
+
 -- 44
 
 with cus_sum as (
