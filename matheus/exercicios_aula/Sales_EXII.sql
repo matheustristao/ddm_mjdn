@@ -286,7 +286,7 @@ select pc.Name as "Category Name", pr.Name as "Product Name", pr.ListPrice,
     order by 1;
 
 -- 28
-    select * from Classificacao;
+    select * from Classificacao
 
     insert into Classificacao (cID,fID,estrelas,dataClassificacao)
     values (
@@ -299,7 +299,7 @@ select pc.Name as "Category Name", pr.Name as "Product Name", pr.ListPrice,
         (select cID from Critico where nome = 'Daniel Morgado'),
         (select fID from Filme where titulo = 'E.T.'),
         5,
-        GETDATE()
+        CAST(GETDATE() AS DATE)
          );    
 
 -- 44
