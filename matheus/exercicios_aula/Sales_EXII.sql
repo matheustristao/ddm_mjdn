@@ -302,6 +302,92 @@ select pc.Name as "Category Name", pr.Name as "Product Name", pr.ListPrice,
         CAST(GETDATE() AS DATE)
          );    
 
+-- 30 
+
+-- Crie as seguintes tabelas
+--• PG (idPG, nome)
+--• EdicaoPG (idPG, edicao, dataInicio, dataFim)
+--Pretende-se que caso a PG seja anulada, também o sejam as suas edições e caso idPG em PG
+--seja alterado, também o seja nas suas edições.
+
+create table PG_Matheus(
+    idPG int PRIMARY KEY,
+    nome varchar(30)
+)
+
+create table EdicaoPGMatheus (
+    idPG int,
+    edicao int,
+    dataInicio Date,
+    PRIMARY key (idPG, edicao),
+    FOREIGN key(idPG) REFERENCES PG_Matheus(idPg) 
+        on DELETE CASCADE 
+        on UPDATE CASCADE);
+
+insert into  PG_Matheus values (
+    1,
+    'PG1'
+);
+
+insert into  EdicaoPGMatheus values (
+    1,
+    1,
+    '2024-11-27'
+);
+
+update PG_Matheus set idPG = 2 where idPG = 1;
+delete from PG_Matheus where idPG = 2;
+
+select * from PG_Matheus;
+select * from EdicaoPGMatheus;
+
+-- 30.2 
+alter table EdicaoPG add MediaDaPG numeric(4,2), constraint datas check (datafim>datainicio);
+ 
+-- ExII 33
+ 
+create or alter view  v_empregado
+(
+cod_emp,
+nome_emp,
+data_admissao,
+cod_cat,
+cod_dept,
+cod_emp_chefe    
+)
+AS
+select
+cod_emp,
+nome_emp,
+data_admissao,
+cod_cat,
+cod_dept,
+cod_emp_chefe    
+from empregado
+where cod_cat<3
+with check option;
+ 
+ --EX 37 
+ CREATE VIEW QSales
+    WITH SCHEMABINDING
+    AS
+        SELECT p.ProductID, sum (linetotal) Vendas, COUNT_BIG(*) AS COUNT
+        FROM g02.Product p JOIN g02.SalesOrderDetail sod ON p.ProductID=sod.ProductID
+        GROUP BY p.ProductID
+        GO
+    CREATE UNIQUE CLUSTERED INDEX idx_QSales on QSales(ProductID);
+ 
+CREATE VIEW QSales
+with SCHEMABINDING as
+SELECT Productid, sum(linetotal) SomaQtVendidas,
+COUNT_BIG(*) count
+FROM g05.SalesOrderDetail
+GROUP BY ProductID
+go
+CREATE unique clustered index idx_QSales on QSales(Productid)
+ 
+
+
 -- 44
 
 with cus_sum as (
