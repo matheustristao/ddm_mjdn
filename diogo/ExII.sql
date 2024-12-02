@@ -123,6 +123,7 @@ where not exists(
 Liste o cliente (CustomerID, companyName) que colocou uma encomenda com o valor máximo entre todas as encomendas. 
 Liste também o salesorderid e o valor dessa encomenda.*/
 
+--subquery
 select c.customerid, companyname, salesorderid, totaldue
 from customer c join SalesOrderHeader soh on c.CustomerID=soh.CustomerID
 where totaldue=(
@@ -141,12 +142,23 @@ GROUP by CountryRegion
 
 /*13
 liste a média das médias das vendas para o par modelo, produto.*/
+
 --Inline view
 select avg(avglinetotal) avgavglinetotal 
 from (
     select productmodelid,p.productid, avg(linetotal) avglinetotal
         from Product p join SalesOrderDetail sod on p.ProductID=sod.ProductID
         group by productmodelid,p.productid) subquery
+
+--cte
+with cte_avglinetotal (productmodelid,productid,avglinetotal) AS
+(select productmodelid,p.productid, avg(linetotal) avglinetotal
+from Product p join SalesOrderDetail sod on p.ProductID=sod.ProductID
+        group by productmodelid,p.productid)
+
+select avg(avglinetotal) as avgavglinetotal 
+from cte_avglinetotal;
+
 
 /*14.
 Indique quantos customers existem sem nenhuma encomenda associada.*/
@@ -184,6 +196,7 @@ order by ListPrice desc
 /*17.
 Identifique o(s) ProductNumber do(s) produto(s) com a máxima média de preço unitário de venda (unitprice), bem como essa média.*/
 
+--subquery
 select productnumber, avg(UnitPrice) avgunitprice
 from Product p join SalesOrderDetail sod on p.ProductID=sod.ProductID
 group by productnumber
@@ -191,6 +204,22 @@ having avg(unitprice)= (
     select max(UnitPrice)
     from Product p join SalesOrderDetail sod on p.ProductID=sod.ProductID
 )
+
+--cte 
+with cte_mediaproduto (productnumber,mediaproduto) AS
+(select productnumber, avg(unitprice) mediaproduto
+from product p 
+join SalesOrderDetail sod
+on p.ProductID=sod.ProductID
+group by productnumber)
+
+select productnumber, mediaproduto maxmedia
+from cte_mediaproduto
+where mediaproduto=(
+    select max(mediaproduto)
+    from cte_mediaproduto
+)
+
 
 /*18.
 Liste o Código das categorias, o código dos produtos e o somatório de vendas por: código de categoria, 
@@ -296,7 +325,7 @@ on p.ProductID=sod.ProductID
 group by rollup (ProductCategoryID, ProductModelID, p.ProductID)
 order by ProductCategoryID, ProductModelID, p.ProductID
 
-/*25.
+/*24.
 Liste o Código das categorias, o código do modelo, o código dos produtos e o somatório de vendas por: 
 código de categoria, código de modelo, código de produto, 
 (código de categoria, código do modelo), (código de categoria, código de produto),
@@ -325,3 +354,39 @@ from product p
 join SalesOrderDetail sod 
 on p.ProductID=sod.ProductID
 group by cube (ProductCategoryID, ProductModelID, p.ProductID)
+
+/*25.
+Encontre as encomendas que contemplam todos os produtos do modelo 37.*/
+
+--Com a grande ajuda do 5º colega, não me ocorreria comparar a contagem dos produtos entre query e subquery
+select SalesOrderID
+from SalesOrderDetail sod
+where ProductID in (
+    select ProductID
+    from product p 
+    where ProductModelID='37')
+group by SalesOrderID
+having count(distinct sod.ProductID)= 
+(select (count(distinct p.ProductID))
+from Product p
+where ProductModelID='37')
+
+/*26.
+Para cada modelo de produto liste o total e o ranking das vendas de cada produto ordenado por ordem descendente de vendas.*/
+
+select productmodelid, p.productid, sum(linetotal), 
+rank() over(partition by productmodelid order by sum(linetotal) desc) salesrank
+from product p join SalesOrderDetail sod on p.productid=sod.productid 
+group by ProductModelID, p.productid
+
+/*27.
+Para cada ProductCategory (name) listar o(s) Product(s) (name) que tem o menor preço de venda (listprice), 
+bem como esse preço, ordenando por ProductCategory (name).*/
+
+select category, product, listprice
+from (
+    select pc.name category, p.name product, listprice,
+    rank() over(partition by pc.name 
+    order by listprice asc) rank
+    from  Product p join  ProductCategory pc on pc.ProductCategoryID=p.ProductCategoryID) X
+    where rank=1 
