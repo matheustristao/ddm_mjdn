@@ -383,10 +383,79 @@ group by ProductModelID, p.productid
 Para cada ProductCategory (name) listar o(s) Product(s) (name) que tem o menor preço de venda (listprice), 
 bem como esse preço, ordenando por ProductCategory (name).*/
 
-select category, product, listprice
+select category, product, listprice, rank
 from (
     select pc.name category, p.name product, listprice,
     rank() over(partition by pc.name 
-    order by listprice asc) rank
+    order by listprice asc) rank 
     from  Product p join  ProductCategory pc on pc.ProductCategoryID=p.ProductCategoryID) X
-    where rank=1 
+where rank=1 
+
+/*28.
+Insira uma classificação de 4 estrelas ao filme ‘Avatar’ atribuída pela crítica ‘Sara Martins’ no dia 2021-05-25 
+e de 5 estrelas pelo crítico ‘Daniel Morgado’ no filme ‘E.T.’ efetuada hoje. 
+Depois faça um Select à Classificação para verificar a correção da inserção.*/
+
+/*insert into classificacao (cid, fid, estrelas, dataclassificacao) 
+values (
+    (select cid from critico c where nome='Sara Martins'),
+    (select fid from filme f where titulo='Avatar'),
+    4,
+    '2021-05-25'
+)
+
+insert into classificacao (cid, fid, estrelas, dataclassificacao) 
+values (
+    (select cid from critico c where nome= 'Daniel Morgado'),
+    (select fid from filme f where titulo='E.T.'),
+    5,
+    GETDATE()
+)
+
+select cid,fid,estrelas, dataclassificacao
+from classificacao cl*/
+
+/*29.
+Crie uma tabela Aluno2 com a seguinte estrutura Aluno2 (idaluno, NIFaluno, nome,dataNasc) 
+Em que idaluno é uma PK surrogate com início em 1 e salto de 1 em 1 e NIFaluno é uma chave candidata. 
+Insira algumas linhas na tabela Aluno*/
+
+/*create table Aluno2
+(idaluno int identity (1,1) primary key,
+NIFaluno int unique not null,
+nome varchar(30),
+dataNasc date)
+
+insert into aluno2 (NIFaluno,nome,dataNasc)
+VALUES(123456,'André','2024-02-01')
+
+insert into aluno2 (NIFaluno,nome,dataNasc)
+VALUES(123486,'Andreia','2024-03-01')*/
+
+/*30
+30.1.
+Crie as seguintes tabelas
+• PG (idPG, nome) • EdicaoPG (idPG, edicao, dataInicio, dataFim) 
+Pretende-se que caso a PG seja anulada, também o sejam as suas edições e caso idPG em PG seja alterado, 
+também o seja nas suas edições. Insira várias linhas nas tabelas e veja o que acontece quando apagar uma PG ou quando alterar idPG.*/
+
+/*Create table PGnew 
+(idPG int primary key,
+nome varchar(50))
+
+Create table EdicaoPGnew
+(idPG int references PGnew
+on delete cascade
+on update cascade,
+edicao int,
+dataInicio date,
+dataFim date,
+primary key (idPG,edicao))*/                                                                                      
+
+/*34.
+Crie uma View Sales que contenha para cada productid o somatório das vendas*/
+
+Create view salesdg as 
+select p.Productid, sum(linetotal) sumlinetotal
+from Product p join SalesOrderDetail sod on p.ProductID=sod.ProductID
+group by p.ProductID
