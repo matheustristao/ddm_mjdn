@@ -158,3 +158,63 @@ select c.CustomerID, companyName, salesorderid, totaldue
                     on c1.CustomerID = soh.CustomerID
             );
 
+/* Exercicio 12
+Por CountryRegion liste o número de Clientes que fizeram encomendas cuja soma é superior a
+$50000, bem como esse somatório por CountryRegion*/
+
+select countryregion, count(c.CustomerID) numeroclientes, sum(TotalDue) totalencomendas
+    from customer c
+    join customeraddress ca
+        on c.CustomerID = ca.CustomerID
+    join Address a
+        on ca.AddressID = a.AddressID
+    join SalesOrderHeader soh
+        on c.CustomerID = soh.CustomerID
+    where TotalDue > 50000
+    group by countryregion;
+
+/* Exercicio 13
+liste a média das médias das vendas para o par modelo, produto.*/
+
+with cte_avg_par (productmodelid, productid, media_par) AS (
+    select productmodelid, p.productid, avg(linetotal) as media_par
+        from Product p
+        join SalesOrderDetail sod
+            on p.ProductID = sod.ProductID
+        group by productmodelid, p.productid
+        )
+
+select avg(media_par) as avg_avg_par
+from cte_avg_par;
+
+/* Exercicio 14
+Indique quantos customers existem sem nenhuma encomenda associada.*/
+
+with cte_semencomendas (CustomerID, CompanyName) as (
+    select c.CustomerID, CompanyName
+    from Customer c
+    left join SalesOrderHeader soh
+        on c.CustomerID = soh.CustomerID
+    where SalesOrderID is null)
+
+select count(customerid)
+from cte_semencomendas;
+
+
+select count(customerid) conta_customer
+    from Customer c
+    where not exists (
+        select *
+            from SalesOrderHeader soh
+            where c.CustomerID = soh.customerid);
+
+
+/* Exercicio 15
+Liste o código das categorias, o código dos produtos e o somatório de vendas (código de
+categoria, código de produto)*/
+
+select productcategoryid, p.productid, sum(linetotal)
+from Product p
+join SalesOrderDetail sod
+on p.ProductID = sod.ProductID 
+group by rollup(ProductCategoryID,p.ProductID)
